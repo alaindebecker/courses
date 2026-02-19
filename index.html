@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 
-<meta name="viewport" content="width=device-width">
+<head>
+	<title>Courses</title>
+	<meta name="viewport" content="width=device-width">
+</head>
 
 <style>
-	* {font-family: sans-serif; cursor: default; zoom: 1.1 }
-	li[onclick="set(this)"]   { color: gray }
-	li[onclick="unset(this)"] { color: black }
+	* {font-family: sans-serif; cursor: default; zoom: 1.1}
+	li[onclick="set(this)"]   { color: gray;  list-style-type: "- " }
+	li[onclick="unset(this)"] { color: black; list-style-type: "+ " }
+	button { float: right }
 </style>
 
 <script>
 format = function(data){
 	html = ""
 	for(line of data.split(/\r?\n/)){
-		m = line.match(/(\s*)(.*)/)
-		if(m[1])
+		m = line.match(/\s*([\+\-])?\s*(.*)/)
+		console.log(m)
+		if(m[1]=="-")
 			html += "<li onclick='set(this)'>"+m[2]+"</li>"
+		else if(m[1]=="+")
+			html += "<li onclick='unset(this)'>"+m[2]+"</li>"
 		else
-			html += "</ul></details>\n<details><summary>"+m[2]+"</summary><ul>\n"
+			html += "</ul></details><details><summary>"+line+"</summary><ul>"
 	}
-	html = html.substring(5+11)
-	html += "</details><button>Save</button>"
+	html = html.substring(5+10)
+	html += "</details><button onclick='save()'>Save</button>"
 	document.body.innerHTML = html
 }
 
@@ -30,11 +37,23 @@ unset = function(item){
 	item.setAttribute("onclick", "set(this)")	
 }
 
-x = new XMLHttpRequest()
-x.open("GET", "https://cors.io/?url=https://pastebin.com/raw/Z7SmDax9")
-x.onload = function(){
-	format(JSON.parse(x.response).body)
+onload = function(){
+	x = new XMLHttpRequest()
+	//x.open("GET", "https://cors.io/?url=https://pastebin.com/raw/Z7SmDax9")
+	x.open("GET", "https://cors.io/?url=https://pastebin.com/raw/qWVrUVxu")
+	x.onload = function(){
+		format(JSON.parse(x.response).body)
+	}
+	x.send()
 }
-x.send()
+
+save = function(){
+	txt = document.body.innerHTML
+	txt = txt.replace(/<li[^>]*>/g, "\n  ")
+	txt = txt.replace(/<summary[^>]*>/g, "\n")
+	txt = txt.replace(/<[^>]*>/g, "")
+	
+	console.log(txt)
+}
 </script>
 <body></body>
