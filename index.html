@@ -19,9 +19,9 @@ format = function(data){
 		m = line.match(/\s*([\+\-])?\s*(.*)/)
 		console.log(m)
 		if(m[1]=="-")
-			html += "<li onclick='set(this)'>"+m[2]+"</li>"
-		else if(m[1]=="+")
 			html += "<li onclick='unset(this)'>"+m[2]+"</li>"
+		else if(m[1]=="+")
+			html += "<li onclick='set(this)'>"+m[2]+"</li>"
 		else
 			html += "</ul></details><details><summary>"+line+"</summary><ul>"
 	}
