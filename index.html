@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<style>
+* {font-family: sans-serif; cursor: default}
+li[onclick="set(this)"]   { color: gray }
+li[onclick="unset(this)"] { color: black }
+</style>
+
+<script>
+format = function(data){
+	html = ""
+	for(line of data.split(/\r?\n/)){
+		m = line.match(/(\s*)(.*)/)
+		if(m[1])
+			html += "<li onclick='set(this)'>"+m[2]+"</li>"
+		else
+			html += "</ul></details>\n<details><summary>"+m[2]+"</summary><ul>\n"
+	}
+	html = html.substring(5+11)
+	document.body.innerHTML = html
+}
+
+set = function(item){
+	item.setAttribute("onclick", "unset(this)")	
+}
+unset = function(item){
+	item.setAttribute("onclick", "set(this)")	
+}
+
+x = new XMLHttpRequest()
+x.open("GET", "https://cors.io/?url=https://pastebin.com/raw/Z7SmDax9")
+x.onload = function(){
+	format(JSON.parse(x.response).body)
+}
+x.send()
+</script>
+<body></body>
