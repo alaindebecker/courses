@@ -19,6 +19,7 @@ format = function(data){
 			html += "</ul></details>\n<details><summary>"+m[2]+"</summary><ul>\n"
 	}
 	html = html.substring(5+11)
+	html += "</details><button>Save</button>"
 	document.body.innerHTML = html
 }
 
