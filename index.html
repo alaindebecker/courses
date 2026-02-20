@@ -6,11 +6,11 @@
   <style>
 	* { font-family: sans-serif; cursor: default }
 	main { display: flex }
-	section { flex: 50% }
+	section { flex: 50%; min-height: 100vh }
 	ul { margin: 0 }
 	
-	#selected { background: lightyellow }
-	#options  { background: lightcyan }
+	#selected { background: white }
+	#options  { background: whitesmoke }
   </style>
 
   <script>
@@ -31,10 +31,10 @@
 		selected = ""
 		for(line of txt.split(/\r?\n/)){
 			if(m=line.match(/^\s*([\+\-])\s*(.*)/))
-				options += '<li class="'+category+'"onmousedown="startdrag(event)">'+m[2]+'</li>'
+				options += '<li class="'+category+'"ontouchstart="startswipe(event)" onclick="toggle(event)">'+m[2]+'</li>'
 			else {
 				category = line.toLowerCase().replace(/[^0-9a-z]/g, '_')
-				selected += '</ul></details><details open><summary>'+line+'</summary><ul class="'+category+'">'
+				selected += '</ul></details><details open onclick="return false"><summary>'+line+'</summary><ul class="'+category+'">'
 				options  += '</ul></details><details><summary>'+line+'</summary><ul class="'+category+'">'
 			}
 		}
@@ -42,33 +42,45 @@
 		document.querySelector("#selected").innerHTML = selected.substring(5+10)
 	}
 	
-	drag = null
-	startdrag = function(evt){
+	toggle = function(evt){
+		if(evt.target.parentElement.parentElement.parentElement.id=="options")
+			setSelected(evt.target)
+		if(evt.target.parentElement.parentElement.parentElement.id=="selected")
+			evt.target.remove()
+	}
+	
+	swipe = null
+	startswipe = function(evt){
 		evt.preventDefault()
-		drag = evt.target.cloneNode(true)
-		evt.target.parentElement.parentElement.parentElement.append(drag)
-		drag.style.position = "absolute"
-		drag.style.left = evt.target.getBoundingClientRect().left +'px'
-		drag.style.top  = evt.target.getBoundingClientRect().top +'px'
+		swipe = evt.target
+		swipe.x = evt.touches[0].screenX
+		swipe.y = evt.touches[0].screenY
 	}
-	onmousemove = function(evt){
-		if(!drag) return
-		drag.style.left = evt.clientX +'px'
-		drag.style.top  = evt.clientY +'px'
+	moveswipe = function(evt){
+		swipe.dx = evt.touches[0].screenX - swipe.x
+		swipe.dy = evt.touches[0].screenY - swipe.y
 	}
-	onmouseup = function(evt){
-		if(!drag) return
-		console.log(drag.parentElement.id)
-		x = document.querySelector("#selected ul."+drag.className)
-		drag.style.position = "static"
-		x.append(drag)
-		drag = null
+	finishswipe = function(evt){
+		if(!swipe) return
+		if(Math.abs(swipe.dx)>Math.abs(swipe.dy))
+			if(swipe.dx<0 && swipe.parentElement.parentElement.parentElement.id=="options")
+				setSelected(swipe)
+			if(swipe.dx>0 && swipe.parentElement.parentElement.parentElement.id=="selected")
+				swipe.remove()
+		swipe = null
+	}
+	
+	setSelected = function(item){
+		for(x of document.querySelectorAll("#selected ul."+item.className+" li"))
+			if(x.innerHTML==item.innerHTML)
+				return
+		document.querySelector("#selected ul."+item.className).append(item.cloneNode(true))				
 	}
   </script>
 </head>
 
 <body>
-  <main>
+  <main ontouchmove="moveswipe(event)" ontouchend="finishswipe(event)">
 	<section id="selected"></section>
 	<section id="options"></section>
   </main>
