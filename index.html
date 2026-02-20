@@ -1,59 +1,31 @@
 <!DOCTYPE html>
 
 <head>
-	<title>Courses</title>
-	<meta name="viewport" content="width=device-width">
+  <title>Courses</title>
+
+  <script>
+	const url = "https://gist.githubusercontent.com/alaindebecker/99b90565149df879de2c4f9c52f0278a/raw/de57bdcabf92017c01c7950f509d720000e4229a/courses.dat"
+
+	onload = function(){
+		x = new XMLHttpRequest()
+		x.open("GET", url)
+		x.onload = function(){
+			toHTML(x.response)
+		}
+		x.send()
+	}
+	
+	toHTML = function(txt){
+		html = ""
+		for(line of txt.split(/\r?\n/)){
+			html += line+"<br>"
+		}
+		document.querySelector("main").innerHTML = html
+	}
+  </script>
 </head>
 
-<style>
-	* {font-family: sans-serif; cursor: default; zoom: 1.1}
-	li[onclick="set(this)"]   { color: gray;  list-style-type: "+ " }
-	li[onclick="unset(this)"] { color: black; list-style-type: "- " }
-	button { float: right }
-</style>
-
-<script>
-format = function(data){
-	html = ""
-	for(line of data.split(/\r?\n/)){
-		m = line.match(/\s*([\+\-])?\s*(.*)/)
-		console.log(m)
-		if(m[1]=="-")
-			html += "<li onclick='unset(this)'>"+m[2]+"</li>"
-		else if(m[1]=="+")
-			html += "<li onclick='set(this)'>"+m[2]+"</li>"
-		else
-			html += "</ul></details><details><summary>"+line+"</summary><ul>"
-	}
-	html = html.substring(5+10)
-	html += "</details><button onclick='save()'>Save</button>"
-	document.body.innerHTML = html
-}
-
-set = function(item){
-	item.setAttribute("onclick", "unset(this)")	
-}
-unset = function(item){
-	item.setAttribute("onclick", "set(this)")	
-}
-
-onload = function(){
-	x = new XMLHttpRequest()
-	//x.open("GET", "https://cors.io/?url=https://pastebin.com/raw/Z7SmDax9")
-	x.open("GET", "https://cors.io/?url=https://pastebin.com/raw/qWVrUVxu")
-	x.onload = function(){
-		format(JSON.parse(x.response).body)
-	}
-	x.send()
-}
-
-save = function(){
-	txt = document.body.innerHTML
-	txt = txt.replace(/<li[^>]*>/g, "\n  ")
-	txt = txt.replace(/<summary[^>]*>/g, "\n")
-	txt = txt.replace(/<[^>]*>/g, "")
-	
-	console.log(txt)
-}
-</script>
-<body></body>
+<body>
+  <main>
+  </main>
+</body>
