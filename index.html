@@ -3,6 +3,13 @@
 <head>
   <title>Courses</title>
 
+  <style>
+	* { font-family: sans-serif; cursor: default }
+	
+	li[onclick="set(this)"] { color: grey; }
+	li[onclick="rst(this)"] { color: black; }
+  </style>
+
   <script>
 	const url = "https://gist.githubusercontent.com/alaindebecker/99b90565149df879de2c4f9c52f0278a/raw/de57bdcabf92017c01c7950f509d720000e4229a/courses.dat"
 
@@ -18,10 +25,24 @@
 	toHTML = function(txt){
 		html = ""
 		for(line of txt.split(/\r?\n/)){
-			html += line+"<br>"
+			if(line.match(/^\s*\+/))
+				html += '<li onclick="set(this)">'+line+'</li>'
+			else
+			if(line.match(/^\s*\-/))
+				html += '<li onclick="rst(this)">'+line+'</li>'
+			else
+				html += "</ul></details><details><summary>"+line+"</summary><ul>"
 		}
 		document.querySelector("main").innerHTML = html
 	}
+	
+	set = function(item){
+		item.setAttribute("onclick", "rst(this)")
+	}
+	rst = function(item){
+		item.setAttribute("onclick", "set(this)")
+	}
+	
   </script>
 </head>
 
