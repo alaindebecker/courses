@@ -5,9 +5,12 @@
 
   <style>
 	* { font-family: sans-serif; cursor: default }
+	main { display: flex }
+	section { flex: 50% }
+	ul { margin: 0 }
 	
-	li[onclick="set(this)"] { color: grey; }
-	li[onclick="rst(this)"] { color: black; }
+	#selected { background: lightyellow }
+	#options  { background: lightcyan }
   </style>
 
   <script>
@@ -23,30 +26,51 @@
 	}
 	
 	toHTML = function(txt){
-		html = ""
+		category = ""
+		options = ""
+		selected = ""
 		for(line of txt.split(/\r?\n/)){
-			if(line.match(/^\s*\+/))
-				html += '<li onclick="set(this)">'+line+'</li>'
-			else
-			if(line.match(/^\s*\-/))
-				html += '<li onclick="rst(this)">'+line+'</li>'
-			else
-				html += "</ul></details><details><summary>"+line+"</summary><ul>"
+			if(m=line.match(/^\s*([\+\-])\s*(.*)/))
+				options += '<li class="'+category+'"onmousedown="startdrag(event)">'+m[2]+'</li>'
+			else {
+				category = line.toLowerCase().replace(/[^0-9a-z]/g, '_')
+				selected += '</ul></details><details open><summary>'+line+'</summary><ul class="'+category+'">'
+				options  += '</ul></details><details><summary>'+line+'</summary><ul class="'+category+'">'
+			}
 		}
-		document.querySelector("main").innerHTML = html
+		document.querySelector("#options").innerHTML  =  options.substring(5+10)
+		document.querySelector("#selected").innerHTML = selected.substring(5+10)
 	}
 	
-	set = function(item){
-		item.setAttribute("onclick", "rst(this)")
+	drag = null
+	startdrag = function(evt){
+		evt.preventDefault()
+		drag = evt.target.cloneNode(true)
+		evt.target.parentElement.parentElement.parentElement.append(drag)
+		drag.style.position = "absolute"
+		drag.style.left = evt.target.getBoundingClientRect().left +'px'
+		drag.style.top  = evt.target.getBoundingClientRect().top +'px'
 	}
-	rst = function(item){
-		item.setAttribute("onclick", "set(this)")
+	onmousemove = function(evt){
+		if(!drag) return
+		drag.style.left = evt.clientX +'px'
+		drag.style.top  = evt.clientY +'px'
 	}
-	
+	onmouseup = function(evt){
+		if(!drag) return
+		console.log(drag.parentElement.id)
+		x = document.querySelector("#selected ul."+drag.className)
+		drag.style.position = "static"
+		x.append(drag)
+		drag = null
+	}
   </script>
 </head>
 
 <body>
   <main>
+	<section id="selected"></section>
+	<section id="options"></section>
   </main>
 </body>
+</html>
