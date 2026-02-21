@@ -9,6 +9,7 @@
 	main { display: flex }
 	section { flex: 50%; min-height: 100vh }
 	ul { margin: 0 }
+	button { position: fixed; right: 20px; bottom: 10px }
 	
 	#selected { background: white }
 	#options  { background: whitesmoke }
@@ -25,23 +26,39 @@
 		x.send()
 	}
 	
+	onsave = function(){
+		fromHTML()
+	}
+	
 	toHTML = function(txt){
 		category = ""
 		options = ""
 		selected = ""
 		for(line of txt.split(/\r?\n/)){
-			if(m=line.match(/^\s*([\+\-])\s*(.*)/))
+			if(m=line.match(/^([\s\+]+)(.*)/)){
 				options += '<li class="'+category+'"ontouchstart="startswipe(event)" onclick="toggle(event)">'+m[2]+'</li>'
-			else {
+				if(m[1].match(/\+/))
+					selected += '<li class="'+category+'"ontouchstart="startswipe(event)" onclick="toggle(event)">'+m[2]+'</li>'
+			}else {
 				category = line.toLowerCase().replace(/[^0-9a-z]/g, '_')
 				selected += '</ul></details><details open onclick="return false"><summary>'+line+'</summary><ul class="'+category+'">'
 				options  += '</ul></details><details><summary>'+line+'</summary><ul class="'+category+'">'
 			}
 		}
+		options += '</ul></details><button onclick="onsave()">Save</button>'
 		document.querySelector("#options").innerHTML  =  options.substring(5+10)
 		document.querySelector("#selected").innerHTML = selected.substring(5+10)
 	}
-	
+	/*
+	fromHTML = function(){
+		options = "fromHTML"
+		txt = document.querySelector("#options").innerHTML
+		txt = txt.replace(/<li[^>]*>/g, "\n  ") 
+		txt = txt.replace(/<details><summary[^>]*>/g, "\n")
+		txt = txt.replace(/<[^>]*>/g, "")
+		console.log(txt)
+	}
+	*/
 	toggle = function(evt){
 		if(evt.target.parentElement.parentElement.parentElement.id=="options")
 			setSelected(evt.target)
