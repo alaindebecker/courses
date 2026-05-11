@@ -6,17 +6,10 @@
 
   <style>
 	* { font-family: sans-serif; cursor: default }
-	main { display: flex }
-	section { flex: 50%; min-height: 100vh }
-	ul { margin: 0 }
-	button { position: fixed; right: 20px; bottom: 10px }
-	
-	#selected { background: white }
-	#options  { background: whitesmoke }
   </style>
 
   <script>
-	const url = "https://gist.githubusercontent.com/alaindebecker/99b90565149df879de2c4f9c52f0278a/raw/050b174f095987518db188b2dc05eea58598c2ab/courses.dat"
+	const url = "https://cloud.seatable.io/workspace/90781/dtable/Courses/?tid=0000&vid=0EEK"
 	onload = function(){
 		x = new XMLHttpRequest()
 		x.open("GET", url)
@@ -26,80 +19,11 @@
 		x.send()
 	}
 	
-	onsave = function(){
-		fromHTML()
-	}
-	
 	toHTML = function(txt){
-		category = ""
-		options = ""
-		selected = ""
-		for(line of txt.split(/\r?\n/)){
-			if(m=line.match(/^([\s\+]+)(.*)/)){
-				options += '<li class="'+category+'"ontouchstart="startswipe(event)" onclick="toggle(event)">'+m[2]+'</li>'
-				if(m[1].match(/\+/))
-					selected += '<li class="'+category+'"ontouchstart="startswipe(event)" onclick="toggle(event)">'+m[2]+'</li>'
-			}else {
-				category = line.toLowerCase().replace(/[^0-9a-z]/g, '_')
-				selected += '</ul></details><details open onclick="return false"><summary>'+line+'</summary><ul class="'+category+'">'
-				options  += '</ul></details><details><summary>'+line+'</summary><ul class="'+category+'">'
-			}
-		}
-		options += '</ul></details><button onclick="onsave()">Save</button>'
-		document.querySelector("#options").innerHTML  =  options.substring(5+10)
-		document.querySelector("#selected").innerHTML = selected.substring(5+10)
-	}
-	/*
-	fromHTML = function(){
-		options = "fromHTML"
-		txt = document.querySelector("#options").innerHTML
-		txt = txt.replace(/<li[^>]*>/g, "\n  ") 
-		txt = txt.replace(/<details><summary[^>]*>/g, "\n")
-		txt = txt.replace(/<[^>]*>/g, "")
 		console.log(txt)
-	}
-	*/
-	toggle = function(evt){
-		if(evt.target.parentElement.parentElement.parentElement.id=="options")
-			setSelected(evt.target)
-		if(evt.target.parentElement.parentElement.parentElement.id=="selected")
-			evt.target.remove()
-	}
-	
-	swipe = null
-	startswipe = function(evt){
-		evt.preventDefault()
-		swipe = evt.target
-		swipe.x = evt.touches[0].screenX
-		swipe.y = evt.touches[0].screenY
-	}
-	moveswipe = function(evt){
-		swipe.dx = evt.touches[0].screenX - swipe.x
-		swipe.dy = evt.touches[0].screenY - swipe.y
-	}
-	finishswipe = function(evt){
-		if(!swipe) return
-		if(Math.abs(swipe.dx)>Math.abs(swipe.dy))
-			if(swipe.dx<0 && swipe.parentElement.parentElement.parentElement.id=="options")
-				setSelected(swipe)
-			if(swipe.dx>0 && swipe.parentElement.parentElement.parentElement.id=="selected")
-				swipe.remove()
-		swipe = null
-	}
-	
-	setSelected = function(item){
-		for(x of document.querySelectorAll("#selected ul."+item.className+" li"))
-			if(x.innerHTML==item.innerHTML)
-				return
-		document.querySelector("#selected ul."+item.className).append(item.cloneNode(true))				
-	}
+	end
   </script>
 </head>
 
-<body>
-  <main ontouchmove="moveswipe(event)" ontouchend="finishswipe(event)">
-	<section id="selected"></section>
-	<section id="options"></section>
-  </main>
-</body>
+<body></body>
 </html>
